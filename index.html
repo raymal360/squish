@@ -288,6 +288,22 @@
     .dropzone.has-files p { font-size: .78rem; }
     .dropzone.has-files .dz-formats { display: none; }
 
+    /* ── PDF processing ─────────────────────────────── */
+    .pdf-processing {
+      display: none;
+      align-items: center;
+      gap: .5rem;
+      margin-top: .75rem;
+      padding: .65rem 1rem;
+      background: color-mix(in srgb, var(--brand) 8%, var(--bg));
+      border: 1px solid color-mix(in srgb, var(--brand) 25%, transparent);
+      border-radius: 10px;
+      font-size: .8125rem;
+      color: var(--brand);
+    }
+
+    .pdf-processing.visible { display: flex; }
+
     /* ── PNG note ───────────────────────────────────── */
     .png-note {
       display: none;
