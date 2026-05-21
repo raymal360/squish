@@ -899,7 +899,7 @@ document.querySelectorAll('.fmt-btn').forEach(btn => {
     btn.classList.add('active');
     isPdfOutput = btn.dataset.fmt === 'pdf';
     outFormat   = isPdfOutput ? 'image/jpeg' : btn.dataset.fmt;
-    pngNote.style.display = (outFormat === 'image/png') ? 'flex' : 'none';
+    pngNote.style.display = (!isPdfOutput && outFormat === 'image/png') ? 'flex' : 'none';
     updateZipBtnLabel();
 
     const compressed = items.filter(i => i.compBlob);
