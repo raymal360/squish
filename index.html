@@ -1158,6 +1158,7 @@ function updateStats() {
 function downloadItem(id) {
   const item = items.find(i => i.id === id);
   if (!item?.compBlob) return;
+  if (item.outFmt === 'pdf') { downloadAsPdf([item]); return; }
   const ext  = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[item.outFmt] || 'jpg';
   const base = item.file.name.replace(/\.[^/.]+$/, '');
   triggerDownload(item.compUrl, base + '-squished.' + ext);
