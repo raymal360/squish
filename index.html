@@ -1197,10 +1197,19 @@ function toPngBlob(url) {
   });
 }
 
-// ── Download ZIP ───────────────────────────────────────────────────────────
+// ── Download ZIP / PDF ─────────────────────────────────────────────────────
 btnZip.addEventListener('click', async () => {
   const done = items.filter(i => i.compBlob);
   if (!done.length) return;
+
+  if (isPdfOutput) {
+    btnZip.disabled  = true;
+    btnZip.innerHTML = `<span class="spinner"></span> Building PDF…`;
+    await downloadAsPdf(done, 'squished-images.pdf');
+    btnZip.disabled  = false;
+    updateZipBtnLabel();
+    return;
+  }
 
   btnZip.disabled  = true;
   btnZip.innerHTML = `<span class="spinner"></span> Zipping…`;
