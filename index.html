@@ -874,9 +874,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 // ── Constants & state ──────────────────────────────────────────────────────
 const QUALITY = 82;
 
-let nextId    = 0;
-let outFormat = 'image/jpeg';
-const items   = [];
+let nextId      = 0;
+let outFormat   = 'image/jpeg';
+let isPdfOutput = false;
+const items     = [];
 
 // ── DOM refs ───────────────────────────────────────────────────────────────
 const dropzone       = document.getElementById('dropzone');
