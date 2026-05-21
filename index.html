@@ -1113,7 +1113,7 @@ btnCompressAll.addEventListener('click', async () => {
     if (item.compUrl) URL.revokeObjectURL(item.compUrl);
     item.compBlob = blob;
     item.compUrl  = URL.createObjectURL(blob);
-    item.outFmt   = outFormat;
+    item.outFmt   = isPdfOutput ? 'pdf' : outFormat;
     applyResult(item);
   }
 
