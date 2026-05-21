@@ -924,21 +924,58 @@ dropzone.addEventListener('drop', e => {
 fileInput.addEventListener('change', () => { handleFiles([...fileInput.files]); fileInput.value = ''; });
 
 // ── File handling ──────────────────────────────────────────────────────────
-function handleFiles(files) {
-  const valid = files.filter(f => ['image/jpeg','image/png','image/webp'].includes(f.type));
-  if (!valid.length) return;
+async function handleFiles(files) {
+  const imageFiles = files.filter(f => ['image/jpeg','image/png','image/webp'].includes(f.type));
+  const pdfFiles   = files.filter(f => f.type === 'application/pdf');
 
-  valid.forEach(file => {
-    const id      = ++nextId;
-    const origUrl = URL.createObjectURL(file);
-    const item    = { id, file, origUrl, compBlob: null, compUrl: null, outFmt: null };
-    items.push(item);
-    renderCard(item);
-  });
+  if (!imageFiles.length && !pdfFiles.length) return;
 
-  hero.classList.add('hidden');
-  dropzone.classList.add('has-files');
-  btnCompressAll.disabled = false;
+  imageFiles.forEach(addImageItem);
+
+  if (pdfFiles.length) {
+    pdfProcessing.classList.add('visible');
+    for (const pdf of pdfFiles) {
+      pdfProcessingMsg.textContent = `Extracting pages from ${pdf.name}…`;
+      const pages = await renderPdfPages(pdf);
+      pages.forEach(addImageItem);
+    }
+    pdfProcessing.classList.remove('visible');
+  }
+
+  if (items.length) {
+    hero.classList.add('hidden');
+    dropzone.classList.add('has-files');
+    btnCompressAll.disabled = false;
+  }
+}
+
+function addImageItem(file) {
+  const id      = ++nextId;
+  const origUrl = URL.createObjectURL(file);
+  const item    = { id, file, origUrl, compBlob: null, compUrl: null, outFmt: null };
+  items.push(item);
+  renderCard(item);
+}
+
+async function renderPdfPages(file) {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf         = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const baseName    = file.name.replace(/\.pdf$/i, '');
+  const pages       = [];
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    pdfProcessingMsg.textContent = `Extracting page ${i} of ${pdf.numPages} from ${file.name}…`;
+    const page     = await pdf.getPage(i);
+    const viewport = page.getViewport({ scale: 2 });
+    const canvas   = document.createElement('canvas');
+    canvas.width   = viewport.width;
+    canvas.height  = viewport.height;
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+    const blob     = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.95));
+    pages.push(new File([blob], `${baseName}-page${i}.jpg`, { type: 'image/jpeg' }));
+  }
+
+  return pages;
 }
 
 // ── Render card ────────────────────────────────────────────────────────────
