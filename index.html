@@ -897,8 +897,10 @@ document.querySelectorAll('.fmt-btn').forEach(btn => {
   btn.addEventListener('click', async () => {
     document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    outFormat = btn.dataset.fmt;
+    isPdfOutput = btn.dataset.fmt === 'pdf';
+    outFormat   = isPdfOutput ? 'image/jpeg' : btn.dataset.fmt;
     pngNote.style.display = (outFormat === 'image/png') ? 'flex' : 'none';
+    updateZipBtnLabel();
 
     const compressed = items.filter(i => i.compBlob);
     if (!compressed.length) return;
@@ -909,7 +911,7 @@ document.querySelectorAll('.fmt-btn').forEach(btn => {
       if (item.compUrl) URL.revokeObjectURL(item.compUrl);
       item.compBlob = blob;
       item.compUrl  = URL.createObjectURL(blob);
-      item.outFmt   = outFormat;
+      item.outFmt   = isPdfOutput ? 'pdf' : outFormat;
       applyResult(item);
     }
     setCompressingState(false);
